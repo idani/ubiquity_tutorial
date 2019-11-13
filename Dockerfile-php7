@@ -1,0 +1,40 @@
+FROM php:7.0-fpm-alpine
+# FROM php:7.3-fpm-alpine
+
+ENV COMPOSER_ALLOW_SUPERUSER 1
+ENV COMPOSER_HOME /composer
+
+# https://stackoverflow.com/questions/54226604/how-to-add-php-redis-for-a-dockerfile-of-laravel-to-kubernetes
+RUN set -eux && apk add --no-cache --virtual .build-deps \
+        $PHPIZE_DEPS \
+        curl \
+        libtool \
+        libxml2-dev \
+        libzip-dev \
+    && apk add --no-cache \
+        sqlite \
+        mysql-client \
+        bash \
+        tzdata \
+        nodejs \
+        ssmtp \
+    && cp /usr/share/zoneinfo/Asia/Tokyo /etc/localtime && echo "Asia/Tokyo" > /etc/timezone \
+    && pecl install xdebug \
+    && docker-php-ext-install \
+        mbstring \
+        pdo \
+        pdo_mysql \
+        mysqli \
+        tokenizer \
+        bcmath \
+        opcache \
+        xml \
+        zip \
+    && apk del -f .build-deps \
+    && docker-php-ext-enable \
+       xdebug \
+    && curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/bin --filename=composer \
+    && composer config -g repos.packagist composer https://packagist.jp \
+    && composer global require hirak/prestissimo \
+    && composer global require phpmv/ubiquity-devtools \
+    && ln -sf /composer/vendor/bin/Ubiquity /usr/local/bin/
