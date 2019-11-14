@@ -1,4 +1,4 @@
-FROM php:7.0-fpm-alpine
+FROM php:7.3-fpm-alpine
 # FROM php:7.3-fpm-alpine
 
 ENV COMPOSER_ALLOW_SUPERUSER 1
@@ -18,8 +18,17 @@ RUN set -eux && apk add --no-cache --virtual .build-deps \
         tzdata \
         nodejs \
         ssmtp \
+        freetype \
+        freetype-dev \
+        libjpeg-turbo \
+        libjpeg-turbo-dev \
+        libpng \
+        libpng-dev \
+        libxml2 \
+        libzip \
     && cp /usr/share/zoneinfo/Asia/Tokyo /etc/localtime && echo "Asia/Tokyo" > /etc/timezone \
     && pecl install xdebug \
+    && docker-php-ext-configure gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/ --with-png-dir=/usr/include/ \
     && docker-php-ext-install \
         mbstring \
         pdo \
@@ -30,6 +39,7 @@ RUN set -eux && apk add --no-cache --virtual .build-deps \
         opcache \
         xml \
         zip \
+        gd \
     && apk del -f .build-deps \
     && docker-php-ext-enable \
        xdebug \

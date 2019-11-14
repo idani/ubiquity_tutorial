@@ -9,7 +9,7 @@ services:
       - "80:80"
       - "443:443"
     volumes:
-      - ./src:/src
+      - ./src/blog:/src
       - ./nginx.default.conf:/etc/nginx/conf.d/default.conf
       - ./logs:/var/log/nginx
     depends_on:
@@ -18,14 +18,17 @@ services:
     build:
       context: ./
       dockerfile: ./Dockerfile-php7
+    ports:
+      - 8090:8090
     env_file: .env
     depends_on:
       - db
     volumes:
-      - ./src:/src
+      - ./src/blog:/src
       - ./php.ini:/usr/local/etc/php/php.ini
       - ./xdebug.ini:/usr/local/etc/php/conf.d/xdebug.ini
       - ./logs:/var/log/php
+    # command: Ubiquity serve -h app
   db:
     image: mysql:5.7
     env_file: .env
