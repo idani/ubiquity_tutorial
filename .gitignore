@@ -1,3 +1,5 @@
 !.gitignore
 
 /logs
+/src/blog/vendor
+/src/vendor
